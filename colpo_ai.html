@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ColpoAI — Case 167 (Nurse + GP)</title>
+  <style>
+    :root{
+      --bg:#f8fafc;            /* slate-50 */
+      --card:#ffffff;
+      --text:#0f172a;          /* slate-900 */
+      --muted:#64748b;         /* slate-500 */
+      --muted2:#475569;        /* slate-600 */
+      --ring:#e2e8f0;          /* slate-200 */
+      --ring2:#cbd5e1;         /* slate-300 */
+      --bar:#0f172a;           /* slate-900 */
+      --bar2:#64748b;          /* slate-500 */
+      --rose:#e11d48;          /* rose-600 */
+      --amber:#b45309;         /* amber-700 */
+      --emerald:#047857;       /* emerald-700 */
+      --shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 24px rgba(15,23,42,.06);
+      --radius: 18px;
+      --radius2: 22px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font);
+      line-height:1.45;
+    }
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    .topbar{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      padding: 16px 16px;
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width: 240px;
+    }
+    .brand .kicker{
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.06em;
+      color:var(--muted2);
+    }
+    .brand .title{
+      font-size:18px;
+      font-weight:800;
+      color:var(--text);
+    }
+    .brand .sub{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .seg{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn{
+      border:1px solid var(--ring);
+      background:var(--card);
+      color:var(--text);
+      font-weight:700;
+      border-radius:999px;
+      padding:10px 14px;
+      cursor:pointer;
+      transition: .15s ease;
+      outline:none;
+    }
+    .btn:hover{border-color:var(--ring2)}
+    .btn.active{
+      background:var(--text);
+      color:#fff;
+      border-color:var(--text);
+    }
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    @media (min-width: 980px){
+      .grid{
+        grid-template-columns: 1.2fr .85fr;
+        align-items:start;
+      }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .card h3{
+      margin:0 0 12px 0;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.04em;
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      text-transform:none;
+    }
+    .card h3 .right{display:flex; gap:8px; align-items:center}
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:700;
+      border-radius:999px;
+      border:1px solid var(--ring);
+      color:var(--muted2);
+      background:#f1f5f9; /* slate-100 */
+    }
+    .pill.rose{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+    .pill.amber{background:#fffbeb;border-color:#fde68a;color:#92400e}
+    .pill.emerald{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+    .pill.solid-rose{background:var(--rose);border-color:var(--rose);color:#fff}
+    .pill.solid-dark{background:var(--text);border-color:var(--text);color:#fff}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .muted{color:var(--muted);font-size:12px}
+    .muted2{color:var(--muted2);font-size:12px}
+    .k{font-size:12px; font-weight:800; letter-spacing:.06em; color:var(--muted2)}
+    .v{font-size:18px; font-weight:900; color:var(--text)}
+    .box{
+      background:#f8fafc;
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      padding: 12px;
+    }
+
+    .barwrap{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+    .bar{height:100%;background:var(--bar);border-radius:999px;width:0}
+    .bar.gray{background:var(--bar2)}
+    .bar.rose{background:var(--rose)}
+    .bar.emerald{background:var(--emerald)}
+
+    .prob-item{margin-top:10px}
+    .prob-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .prob-name{font-weight:800;font-size:13px;color:var(--text)}
+    .prob-val{font-size:13px;color:var(--muted2)}
+    .prob-val.top{font-weight:900;color:var(--text)}
+
+    .actions{display:grid;grid-template-columns:1fr;gap:10px}
+    @media (min-width:720px){ .actions{grid-template-columns:1fr 1fr;} }
+
+    .actionbtn{
+      border:1px solid var(--ring);
+      background:#fff;
+      border-radius: var(--radius2);
+      padding: 14px;
+      cursor:pointer;
+      transition:.15s ease;
+      text-align:left;
+      outline:none;
+    }
+    .actionbtn:hover{border-color:var(--ring2)}
+    .actionbtn .t{font-size:13px;font-weight:900}
+    .actionbtn .s{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .actionbtn.active-rose{
+      background:var(--rose);
+      border-color:var(--rose);
+      color:#fff;
+    }
+    .actionbtn.active-rose .s{color:#ffe4e6}
+    .actionbtn.active-dark{
+      background:var(--text);
+      border-color:var(--text);
+      color:#fff;
+    }
+    .actionbtn.active-dark .s{color:#e2e8f0}
+
+    .disclaimer{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      background:#f1f5f9;
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      padding: 12px;
+    }
+    .icon{
+      width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;
+      border-radius:6px; background:#e2e8f0; color:var(--text); font-weight:900;
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+    .disc-title{font-weight:900;font-size:13px}
+    .disc-text{color:var(--muted);font-size:12px;margin-top:2px}
+
+    details{
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      background:#fff;
+      overflow:hidden;
+    }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:900;
+      font-size:13px;
+      outline:none;
+    }
+    summary::-webkit-details-marker{display:none}
+    details .content{padding: 0 14px 14px}
+    .bullets{margin:8px 0 0 0; padding:0; list-style:none}
+    .bullets li{display:flex; gap:10px; margin-top:8px}
+    .dot{width:6px;height:6px;border-radius:99px;background:#94a3b8;margin-top:8px;flex:0 0 auto}
+    .bullets p{margin:0;color:var(--muted2);font-size:13px;line-height:1.5}
+
+    .split2{display:grid;grid-template-columns:1fr;gap:10px}
+    @media (min-width:720px){ .split2{grid-template-columns:1fr 1fr;} }
+
+    .mini{
+      background:#fff;
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      padding: 12px;
+    }
+    .mini .k{font-size:11px}
+    .mini .big{font-size:26px;font-weight:950;margin-top:4px}
+    .note{font-size:12px;color:var(--muted);margin-top:6px}
+    .note.warn{color:#9f1239;font-weight:800}
+
+    .footer{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid var(--ring);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .footer strong{color:var(--muted2)}
+    .tag{font-weight:800;color:var(--muted2)}
+    .hidden{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="kicker">ColpoAI</div>
+        <div class="title">Case <span id="caseId"></span></div>
+        <div class="sub">Remote clinic workflow — nurse capture, GP review</div>
+      </div>
+      <div class="seg" role="tablist" aria-label="Role toggle">
+        <button id="btnNurse" class="btn active" role="tab" aria-selected="true">Nurse view</button>
+        <button id="btnGP" class="btn" role="tab" aria-selected="false">GP view</button>
+      </div>
+    </div>
+
+    <!-- Nurse view -->
+    <div id="viewNurse" class="grid" role="tabpanel" aria-label="Nurse view">
+      <div class="col">
+        <div class="card">
+          <h3>
+            <span>Triage summary</span>
+            <span class="right">
+              <span id="riskPill" class="pill rose">High concern</span>
+            </span>
+          </h3>
+
+          <div class="row">
+            <span class="pill">Case <span id="caseId2"></span></span>
+            <span class="pill">Abstain: <span id="abstainVal" style="font-weight:900;margin-left:6px"></span></span>
+            <span id="recPillNurse" class="pill solid-rose">Urgent review</span>
+          </div>
+
+          <div id="predBoxNurse" class="box" style="margin-top:12px">
+            <div class="k">Predicted label</div>
+            <div id="predLabelNurse" class="v"></div>
+            <div class="muted2" style="margin-top:6px">
+              Follow the recommendation and document key visible cues for handover.
+            </div>
+          </div>
+
+          <div class="disclaimer" style="margin-top:12px">
+            <div class="icon">!</div>
+            <div>
+              <div class="disc-title">Decision support only</div>
+              <div class="disc-text">
+                This output is for triage and documentation support. It does not establish a diagnosis.
+                Confirm findings using local clinical guidelines and appropriate referral pathways.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Recommendation</h3>
+          <div class="actions">
+            <button id="actUrgent" class="actionbtn active-rose" type="button">
+              <div class="t">Urgent review</div>
+              <div class="s">Refer to GP / higher-level facility. Consider same-day escalation if feasible.</div>
+            </button>
+            <button id="actRoutine" class="actionbtn" type="button">
+              <div class="t">Routine follow-up</div>
+              <div class="s">Schedule follow-up per protocol if no red flags and clinician agrees.</div>
+            </button>
+          </div>
+
+          <div class="mini" style="margin-top:12px">
+            <div class="k">Handover notes</div>
+            <div class="muted2" style="margin-top:6px">
+              Image quality: <span id="imgQualityNurse" style="font-weight:900"></span>. Visibility limits noted.
+              Document observed cues and attach best images.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Reasoning behind the scores</h3>
+          <div id="scoreBreakdown"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <h3>Probabilities</h3>
+          <div id="probBarsNurse"></div>
+        </div>
+
+        <div class="card">
+          <h3>Confidence</h3>
+          <div id="confBlockNurse"></div>
+        </div>
+
+        <div class="card">
+          <h3>Why these probabilities</h3>
+          <div id="whyProbsNurse"></div>
+        </div>
+
+        <div class="card">
+          <h3>Visibility limits</h3>
+          <div id="visibilityListNurse"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GP view -->
+    <div id="viewGP" class="grid hidden" role="tabpanel" aria-label="GP view">
+      <div class="col">
+        <div class="card">
+          <h3>Model output</h3>
+
+          <div class="split2">
+            <div class="box">
+              <div class="k">Predicted label</div>
+              <div id="predLabelGP" class="v"></div>
+
+              <div class="k" style="margin-top:12px">Recommendation</div>
+              <div id="recPillGP" class="pill solid-rose" style="margin-top:6px">Urgent review</div>
+
+              <div class="muted2" style="margin-top:10px">
+                Review images and clinical context. This output should not replace standard of care.
+              </div>
+            </div>
+
+            <div class="mini">
+              <div id="confBlockGP"></div>
+            </div>
+          </div>
+
+          <div class="mini" style="margin-top:12px">
+            <div class="k">Class probabilities</div>
+            <div id="probBarsGP" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Reasoning behind the scores</h3>
+          <div id="scoreBreakdownGP"></div>
+        </div>
+
+        <div class="card">
+          <h3>Rationale</h3>
+          <div class="muted2" id="rationaleGP"></div>
+        </div>
+
+        <div class="card">
+          <h3>Observed visual cues</h3>
+          <div id="cuesGP"></div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <h3>Quality & limitations</h3>
+          <div class="box">
+            <div class="k">Image quality</div>
+            <div id="imgQualityGP" class="muted2" style="font-weight:900;margin-top:6px"></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="k">Visibility limits</div>
+            <div id="visibilityListGP" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Why these probabilities</h3>
+          <div id="whyProbsGP"></div>
+        </div>
+
+        <div class="card">
+          <h3>Clinical safety</h3>
+          <div class="disclaimer">
+            <div class="icon">!</div>
+            <div>
+              <div class="disc-title">Decision support only</div>
+              <div class="disc-text">
+                This output is for triage and documentation support. It does not establish a diagnosis.
+                Confirm findings using local clinical guidelines and appropriate referral pathways.
+              </div>
+            </div>
+          </div>
+
+          <div class="mini" style="margin-top:12px">
+            <div class="k">Suggested next actions</div>
+            <ul class="bullets">
+              <li><span class="dot"></span><p>Confirm visibility limitations (blood/glare/speculum occlusion) and consider repeat imaging if appropriate.</p></li>
+              <li><span class="dot"></span><p>Ensure proper referral pathway and documentation per local protocol.</p></li>
+              <li><span class="dot"></span><p>Record clinician disposition (reviewed / not reviewed), and store case audit log.</p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><strong>Audit</strong> <span class="tag">Case output persisted</span> for QA and clinician review.</div>
+      <div>Schema: JSON • Case <span id="caseId3"></span></div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Case JSON (provided) =====
+    const CASE = {
+      case_id: "167",
+      abstain: false,
+      abstain_reason: null,
+      probabilities: {
+        cervical_cancer: 0.8,
+        hsil: 0.15,
+        lsil: 0.04,
+        normal: 0.01
+      },
+      predicted_label: "cervical_cancer",
+      recommendation: "urgent_review",
+      confidence: {
+        level: "medium",
+        score: 0.74,
+        score_method: "rule_based_v1"
+      },
+      evidence_notes: {
+        image_quality: "moderate",
+        visibility_limits: [
+          "specular glare/reflections on cervix surface",
+          "active bleeding/blood obscures portions of the surface in some views",
+          "partial speculum/edge occlusion at periphery"
+        ],
+        observed_visual_cues: [
+          "bulky, irregular exophytic/raised mass occupying a large portion of the cervix",
+          "friable-appearing tissue with active bleeding/oozing in multiple views",
+          "heterogeneous surface coloration with areas suggestive of necrotic/slough-like material",
+          "irregular surface architecture with disrupted/ulcerated-appearing regions"
+        ],
+        rationale:
+          "Across the provided views for Case 167, the dominant finding is a large, irregular, mass-like lesion with marked surface heterogeneity and friability (active bleeding). These features are more consistent with an invasive malignant-appearing process than with flat, well-demarcated acetowhite lesions typical of LSIL/HSIL or a normal cervix."
+      }
+    };
+
+    // ===== Helpers =====
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+    const pct = (x) => `${Math.round(clamp01(x) * 100)}%`;
+
+    function labelPretty(k){
+      switch(k){
+        case "cervical_cancer": return "Cervical cancer";
+        case "hsil": return "HSIL";
+        case "lsil": return "LSIL";
+        case "normal": return "Normal";
+        default: return k;
+      }
+    }
+
+    function setText(id, text){ document.getElementById(id).textContent = text; }
+
+    function bulletList(items){
+      const ul = document.createElement("ul");
+      ul.className = "bullets";
+      (items || []).forEach(t => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        const p = document.createElement("p");
+        p.textContent = t;
+        li.appendChild(dot);
+        li.appendChild(p);
+        ul.appendChild(li);
+      });
+      return ul;
+    }
+
+    function probabilityBars(container, probs, highlight){
+      const entries = Object.entries(probs || {}).map(([k,v]) => ({k, v: v ?? 0}))
+        .sort((a,b) => (b.v||0) - (a.v||0));
+
+      container.innerHTML = "";
+      entries.forEach(({k,v}) => {
+        const wrap = document.createElement("div");
+        wrap.className = "prob-item";
+
+        const head = document.createElement("div");
+        head.className = "prob-head";
+
+        const name = document.createElement("div");
+        name.className = "prob-name";
+        name.textContent = labelPretty(k);
+
+        const val = document.createElement("div");
+        val.className = "prob-val" + (k === highlight ? " top" : "");
+        val.textContent = pct(v);
+
+        head.appendChild(name);
+        head.appendChild(val);
+
+        const barwrap = document.createElement("div");
+        barwrap.className = "barwrap";
+
+        const bar = document.createElement("div");
+        bar.className = "bar " + (k === highlight ? "" : "gray");
+        bar.style.width = `${clamp01(v) * 100}%`;
+
+        barwrap.appendChild(bar);
+        wrap.appendChild(head);
+        wrap.appendChild(barwrap);
+        container.appendChild(wrap);
+      });
+    }
+
+    function confidenceBlock(container, conf){
+      const level = (conf?.level || "—").toUpperCase();
+      const score = clamp01(conf?.score ?? 0);
+      const method = conf?.score_method || "—";
+
+      container.innerHTML = "";
+
+      const head = document.createElement("div");
+      head.className = "row";
+      head.style.justifyContent = "space-between";
+
+      const left = document.createElement("div");
+      left.className = "muted2";
+      left.style.fontWeight = "800";
+      left.textContent = "Confidence";
+
+      const right = document.createElement("div");
+      right.className = "muted2";
+      right.style.fontWeight = "900";
+      right.textContent = `${level} (${Math.round(score*100)})`;
+
+      head.appendChild(left);
+      head.appendChild(right);
+
+      const bw = document.createElement("div");
+      bw.className = "barwrap";
+      bw.style.height = "12px";
+
+      const b = document.createElement("div");
+      b.className = "bar";
+      b.style.width = `${score*100}%`;
+
+      bw.appendChild(b);
+
+      const foot = document.createElement("div");
+      foot.className = "muted";
+      foot.style.marginTop = "6px";
+      foot.innerHTML = `Scoring method: <span style="font-weight:800;color:var(--muted2)">${method}</span>`;
+
+      container.appendChild(head);
+      container.appendChild(bw);
+      container.appendChild(foot);
+    }
+
+    // ===== Explainability layer (rule_based_v1) =====
+    function computeRuleBasedV1Explanation(){
+      const base = 0.55;
+      const cues = CASE.evidence_notes?.observed_visual_cues || [];
+      const vis  = CASE.evidence_notes?.visibility_limits || [];
+      const quality = (CASE.evidence_notes?.image_quality || "moderate").toLowerCase();
+
+      const cueRules = [
+        { key:"exophytic_mass", label:"Large exophytic / mass-like lesion", re:/exophytic|mass|raised|bulky/i, w:0.14 },
+        { key:"friable_bleeding", label:"Friability / active bleeding", re:/friable|bleeding|oozing/i, w:0.10 },
+        { key:"necrotic_heterogeneous", label:"Heterogeneous surface / necrotic-appearing areas", re:/heterogeneous|necrotic|slough/i, w:0.07 },
+        { key:"ulcerated_disrupted", label:"Ulcerated / disrupted architecture", re:/ulcer|disrupted|irregular architecture/i, w:0.07 }
+      ];
+
+      const cueHits = cueRules.map(r => ({...r, hit: cues.some(s => r.re.test(s))}));
+      const cueAddRaw = cueHits.reduce((a,r)=>a+(r.hit?r.w:0),0);
+      const cueAdd = Math.min(0.35, cueAddRaw);
+
+      const penaltyRules = [
+        { key:"glare", label:"Specular glare / reflections", re:/glare|reflection/i, w:-0.05 },
+        { key:"blood_obscures", label:"Blood obscures portions", re:/bleeding|blood obscures|obscures/i, w:-0.08 },
+        { key:"occlusion", label:"Speculum / edge occlusion", re:/occlusion|speculum|edge/i, w:-0.04 }
+      ];
+
+      const penHits = penaltyRules.map(r => ({...r, hit: vis.some(s => r.re.test(s))}));
+      const penaltyRaw = penHits.reduce((a,r)=>a+(r.hit?r.w:0),0);
+      const penalty = Math.max(-0.2, penaltyRaw);
+
+      const qualityAdj = (quality === "high") ? 0.05 : (quality === "low") ? -0.08 : 0.0;
+
+      const calculated = clamp01(base + cueAdd + penalty + qualityAdj);
+      const reported = clamp01(CASE.confidence?.score ?? calculated);
+      const mismatch = Math.abs(reported - calculated);
+
+      return {
+        method: CASE.confidence?.score_method || "rule_based_v1",
+        reported,
+        calculated,
+        mismatch,
+        base,
+        cueAdd,
+        penalty,
+        qualityAdj,
+        cueHits,
+        penHits
+      };
+    }
+
+    function barRow(label, value, intent){
+      const v = Math.abs(value);
+      const row = document.createElement("div");
+      row.className = "mini";
+      row.style.background = "#f8fafc";
+
+      const head = document.createElement("div");
+      head.className = "row";
+      head.style.justifyContent = "space-between";
+
+      const l = document.createElement("div");
+      l.className = "muted2";
+      l.style.fontWeight = "800";
+      l.textContent = label;
+
+      const r = document.createElement("div");
+      r.style.fontWeight = "900";
+      r.style.color = "var(--text)";
+      r.textContent = `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
+
+      head.appendChild(l);
+      head.appendChild(r);
+
+      const bw = document.createElement("div");
+      bw.className = "barwrap";
+      const b = document.createElement("div");
+      b.className = "bar " + (intent === "pos" ? "emerald" : intent === "neg" ? "rose" : "");
+      b.style.width = `${clamp01(v) * 100}%`;
+      bw.appendChild(b);
+
+      row.appendChild(head);
+      row.appendChild(bw);
+      return row;
+    }
+
+    function detailsBlock(title, items, open=false){
+      const d = document.createElement("details");
+      if(open) d.open = true;
+
+      const s = document.createElement("summary");
+      s.textContent = title;
+
+      const content = document.createElement("div");
+      content.className = "content";
+      content.appendChild(bulletList(items));
+
+      d.appendChild(s);
+      d.appendChild(content);
+      return d;
+    }
+
+    function scoreBreakdown(container){
+      const exp = computeRuleBasedV1Explanation();
+      container.innerHTML = "";
+
+      // Header note
+      const header = document.createElement("div");
+      header.className = "box";
+      header.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div class="icon">i</div>
+          <div>
+            <div style="font-weight:900;font-size:13px">Reasoning behind the confidence score</div>
+            <div class="disc-text">
+              The app reports the model’s confidence score and shows a transparent breakdown of how a
+              <span style="font-weight:800;color:var(--muted2)">${exp.method}</span> rule maps the documented evidence to a score.
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(header);
+
+      // Reported vs calculated
+      const split = document.createElement("div");
+      split.className = "split2";
+      split.style.marginTop = "10px";
+
+      const a = document.createElement("div");
+      a.className = "mini";
+      a.innerHTML = `
+        <div class="k">Reported score</div>
+        <div class="big">${exp.reported.toFixed(2)}</div>
+        <div class="note">Level: ${CASE.confidence.level}</div>
+      `;
+
+      const b = document.createElement("div");
+      b.className = "mini";
+      const mismatchFlag = exp.mismatch > 0.03;
+      b.innerHTML = `
+        <div class="k">Rule-based breakdown score</div>
+        <div class="big">${exp.calculated.toFixed(2)}</div>
+        <div class="note ${mismatchFlag ? "warn": ""}">
+          ${mismatchFlag ? `Note: mismatch vs reported (Δ ${exp.mismatch.toFixed(2)}). Review scoring config.`
+                         : `Aligned with reported score (Δ ${exp.mismatch.toFixed(2)}).`}
+        </div>
+      `;
+      split.appendChild(a);
+      split.appendChild(b);
+      container.appendChild(split);
+
+      // Factor details (expandable)
+      const det = document.createElement("details");
+      det.open = true;
+
+      const sum = document.createElement("summary");
+      sum.textContent = "Factor-by-factor contributions";
+      det.appendChild(sum);
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      // Bars
+      content.appendChild(barRow("Base score", exp.base, "neutral"));
+      content.appendChild(barRow("Additions from observed cues", exp.cueAdd, "pos"));
+      content.appendChild(barRow("Penalties from visibility limits", exp.penalty, "neg"));
+      content.appendChild(barRow("Image quality adjustment", exp.qualityAdj, "neutral"));
+
+      // Evidence used: cues
+      const cuesUsed = exp.cueHits
+        .filter(h => h.hit)
+        .map(h => `${h.label} (+${h.w.toFixed(2)})`);
+      const penUsed = exp.penHits
+        .filter(h => h.hit)
+        .map(h => `${h.label} (${h.w.toFixed(2)})`);
+
+      const evid = document.createElement("div");
+      evid.className = "mini";
+      evid.style.marginTop = "10px";
+      evid.innerHTML = `<div class="k">Evidence used</div>`;
+      const ul = document.createElement("ul");
+      ul.className = "bullets";
+      const addItem = (txt) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("span"); dot.className="dot";
+        const p = document.createElement("p"); p.textContent = txt;
+        li.appendChild(dot); li.appendChild(p); ul.appendChild(li);
+      };
+
+      addItem("Observed cues contributing to confidence:");
+      (cuesUsed.length ? cuesUsed : ["(none detected by rule)"]).forEach(t => addItem(t));
+      addItem("Visibility limits reducing confidence:");
+      (penUsed.length ? penUsed : ["(none detected by rule)"]).forEach(t => addItem(t));
+      addItem(`Image quality: ${CASE.evidence_notes.image_quality} (${exp.qualityAdj >= 0 ? "+" : ""}${exp.qualityAdj.toFixed(2)})`);
+
+      evid.appendChild(ul);
+      content.appendChild(evid);
+
+      // Rule summary
+      const rs = document.createElement("div");
+      rs.className = "mini";
+      rs.style.marginTop = "10px";
+      rs.innerHTML = `
+        <div class="k">Rule summary</div>
+        <ul class="bullets">
+          <li><span class="dot"></span><p>Base = 0.55</p></li>
+          <li><span class="dot"></span><p>Add cues up to +0.35 (cap)</p></li>
+          <li><span class="dot"></span><p>Visibility penalties down to -0.20 (cap)</p></li>
+          <li><span class="dot"></span><p>Quality: high +0.05, moderate +0.00, low -0.08</p></li>
+          <li><span class="dot"></span><p>Clamp to [0, 1]</p></li>
+        </ul>
+      `;
+      content.appendChild(rs);
+
+      det.appendChild(content);
+      container.appendChild(det);
+    }
+
+    function whyProbabilities(container){
+      const p = CASE.probabilities;
+
+      container.innerHTML = "";
+
+      const lead = document.createElement("div");
+      lead.className = "box";
+      lead.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div class="icon">i</div>
+          <div>
+            <div style="font-weight:900;font-size:13px">How the probabilities are justified</div>
+            <div class="disc-text">
+              This section explains, in plain language, why each class probability is plausible given the
+              documented visual cues and limitations. It does not add new clinical facts.
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(lead);
+
+      const blocks = [
+        {
+          title: `Why ${labelPretty("cervical_cancer")} is highest (${pct(p.cervical_cancer)})`,
+          open: true,
+          items: [
+            "Observed cues describe a bulky, irregular, raised mass-like lesion and disrupted surface architecture.",
+            "Friability with active bleeding/oozing and heterogeneous/necrotic-appearing material increases concern for an invasive malignant-appearing process.",
+            "These features are described as dominant across views in the provided rationale."
+          ]
+        },
+        {
+          title: `Why ${labelPretty("hsil")} remains non-zero (${pct(p.hsil)})`,
+          open: false,
+          items: [
+            "HSIL can present with abnormal surface changes, but the notes emphasize a mass-like, friable, bleeding lesion rather than flat, well-demarcated lesions.",
+            "Given image limitations (blood/glare/occlusion), a smaller high-grade area cannot be fully excluded, so residual probability is retained."
+          ]
+        },
+        {
+          title: `Why ${labelPretty("lsil")} is low (${pct(p.lsil)})`,
+          open: false,
+          items: [
+            "LSIL is more often associated with subtle, less aggressive-appearing changes.",
+            "The documented cues are dominated by mass effect, friability, and ulcerated/disrupted architecture, which are less consistent with LSIL."
+          ]
+        },
+        {
+          title: `Why ${labelPretty("normal")} is minimal (${pct(p.normal)})`,
+          open: false,
+          items: [
+            "Multiple abnormal cues are noted; normal probability is therefore kept near zero.",
+            "Visibility limits reduce certainty but do not remove the presence of the described abnormal findings."
+          ]
+        }
+      ];
+
+      blocks.forEach(b => container.appendChild(detailsBlock(b.title, b.items, b.open)));
+    }
+
+    // ===== Risk/recommendation UI =====
+    function riskPillFor(pred){
+      if(pred === "cervical_cancer") return { text:"High concern", cls:"pill rose" };
+      if(pred === "hsil") return { text:"Elevated concern", cls:"pill amber" };
+      if(pred === "lsil") return { text:"Lower concern", cls:"pill" };
+      return { text:"No concerning features", cls:"pill emerald" };
+    }
+
+    function recPillFor(rec){
+      return rec === "urgent_review"
+        ? { text:"Urgent review", cls:"pill solid-rose" }
+        : { text:"Routine follow-up", cls:"pill solid-dark" };
+    }
+
+    // ===== Render =====
+    function renderAll(){
+      setText("caseId", CASE.case_id);
+      setText("caseId2", CASE.case_id);
+      setText("caseId3", CASE.case_id);
+
+      setText("abstainVal", CASE.abstain ? "Yes" : "No");
+
+      const risk = riskPillFor(CASE.predicted_label);
+      const riskEl = document.getElementById("riskPill");
+      riskEl.className = risk.cls;
+      riskEl.textContent = risk.text;
+
+      const recN = recPillFor(CASE.recommendation);
+      const recPillN = document.getElementById("recPillNurse");
+      recPillN.className = recN.cls;
+      recPillN.textContent = recN.text;
+
+      const recPillGP = document.getElementById("recPillGP");
+      recPillGP.className = recN.cls;
+      recPillGP.textContent = recN.text;
+
+      // Predicted label text
+      setText("predLabelNurse", labelPretty(CASE.predicted_label));
+      setText("predLabelGP", labelPretty(CASE.predicted_label));
+
+      // Image quality
+      setText("imgQualityNurse", CASE.evidence_notes.image_quality);
+      setText("imgQualityGP", CASE.evidence_notes.image_quality);
+
+      // Rationale
+      document.getElementById("rationaleGP").textContent = CASE.evidence_notes.rationale;
+
+      // Cues list
+      const cuesWrap = document.getElementById("cuesGP");
+      cuesWrap.innerHTML = "";
+      cuesWrap.appendChild(bulletList(CASE.evidence_notes.observed_visual_cues));
+
+      // Visibility lists
+      const visN = document.getElementById("visibilityListNurse");
+      visN.innerHTML = ""; visN.appendChild(bulletList(CASE.evidence_notes.visibility_limits));
+      const visG = document.getElementById("visibilityListGP");
+      visG.innerHTML = ""; visG.appendChild(bulletList(CASE.evidence_notes.visibility_limits));
+
+      // Probabilities
+      probabilityBars(document.getElementById("probBarsNurse"), CASE.probabilities, CASE.predicted_label);
+      probabilityBars(document.getElementById("probBarsGP"), CASE.probabilities, CASE.predicted_label);
+
+      // Confidence blocks
+      confidenceBlock(document.getElementById("confBlockNurse"), CASE.confidence);
+      confidenceBlock(document.getElementById("confBlockGP"), CASE.confidence);
+
+      // Why probabilities
+      whyProbabilities(document.getElementById("whyProbsNurse"));
+      whyProbabilities(document.getElementById("whyProbsGP"));
+
+      // Score breakdown
+      scoreBreakdown(document.getElementById("scoreBreakdown"));
+      scoreBreakdown(document.getElementById("scoreBreakdownGP"));
+
+      // Actions state (nurse)
+      setRecommendationUI(CASE.recommendation);
+    }
+
+    function setRecommendationUI(rec){
+      const urgent = document.getElementById("actUrgent");
+      const routine = document.getElementById("actRoutine");
+
+      urgent.className = "actionbtn" + (rec === "urgent_review" ? " active-rose" : "");
+      routine.className = "actionbtn" + (rec === "routine_followup" ? " active-dark" : "");
+
+      const pill = recPillFor(rec);
+      const recPillN = document.getElementById("recPillNurse");
+      recPillN.className = pill.cls;
+      recPillN.textContent = pill.text;
+
+      // GP pill remains the model recommendation (for traceability)
+      const recPillGP = document.getElementById("recPillGP");
+      const modelPill = recPillFor(CASE.recommendation);
+      recPillGP.className = modelPill.cls;
+      recPillGP.textContent = modelPill.text;
+    }
+
+    // ===== Role toggle =====
+    const btnNurse = document.getElementById("btnNurse");
+    const btnGP = document.getElementById("btnGP");
+    const viewNurse = document.getElementById("viewNurse");
+    const viewGP = document.getElementById("viewGP");
+
+    function showRole(role){
+      const isNurse = role === "nurse";
+      btnNurse.classList.toggle("active", isNurse);
+      btnGP.classList.toggle("active", !isNurse);
+      btnNurse.setAttribute("aria-selected", isNurse ? "true" : "false");
+      btnGP.setAttribute("aria-selected", !isNurse ? "true" : "false");
+      viewNurse.classList.toggle("hidden", !isNurse);
+      viewGP.classList.toggle("hidden", isNurse);
+    }
+
+    btnNurse.addEventListener("click", () => showRole("nurse"));
+    btnGP.addEventListener("click", () => showRole("gp"));
+
+    // Nurse actions
+    document.getElementById("actUrgent").addEventListener("click", () => setRecommendationUI("urgent_review"));
+    document.getElementById("actRoutine").addEventListener("click", () => setRecommendationUI("routine_followup"));
+
+    // Init
+    renderAll();
+    showRole("nurse");
+  </script>
+</body>
+</html>
